@@ -3,6 +3,7 @@ from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoAlertPresentException
 import unittest
+from contact import Contact
 
 class TestAddContact(unittest.TestCase):
     def setUp(self):
@@ -13,7 +14,7 @@ class TestAddContact(unittest.TestCase):
         wd = self.wd
         self.open_home_page(wd)
         self.login(wd, username="admin", password="secret")
-        self.create_contact(wd, first_name="qwe", last_name="qwerty", address="qwe123")
+        self.create_contact(wd, Contact(first_name="qwe", last_name="qwerty", address="qwe123"))
         self.return_to_home_page(wd)
         self.logout(wd)
 
@@ -21,7 +22,7 @@ class TestAddContact(unittest.TestCase):
         wd = self.wd
         self.open_home_page(wd)
         self.login(wd, username="admin", password="secret")
-        self.create_contact(wd, first_name="", last_name="", address="")
+        self.create_contact(wd, Contact(first_name="", last_name="", address=""))
         self.return_to_home_page(wd)
         self.logout(wd)
 
@@ -31,19 +32,19 @@ class TestAddContact(unittest.TestCase):
     def return_to_home_page(self, wd):
         wd.find_element_by_link_text("home").click()
 
-    def create_contact(self, wd, first_name, last_name, address):
+    def create_contact(self, wd, contact):
         # init_contact_creation
         wd.find_element_by_link_text("add new").click()
         # fill_contact_form
         wd.find_element_by_name("firstname").click()
         wd.find_element_by_name("firstname").clear()
-        wd.find_element_by_name("firstname").send_keys(first_name)
+        wd.find_element_by_name("firstname").send_keys(contact.first_name)
         wd.find_element_by_name("lastname").click()
         wd.find_element_by_name("lastname").clear()
-        wd.find_element_by_name("lastname").send_keys(last_name)
+        wd.find_element_by_name("lastname").send_keys(contact.last_name)
         wd.find_element_by_name("address").click()
         wd.find_element_by_name("address").clear()
-        wd.find_element_by_name("address").send_keys(address)
+        wd.find_element_by_name("address").send_keys(contact.address)
         # submit_contact_creation
         wd.find_element_by_xpath("//div[@id='content']/form/input[21]").click()
 
