@@ -1,4 +1,5 @@
 from model.contact import Contact
+import re
 
 class ContactHelper:
 
@@ -13,6 +14,16 @@ class ContactHelper:
     def refresh_contacts_page(self):
         wd = self.app.wd
         wd.find_element_by_link_text("home").click()    
+
+    def open_contact_edit_page(self, index):
+        wd = self.app.wd
+        self.open_contacts_page()   
+        wd.find_elements_by_xpath("//img[@title='Edit']")[index].click()
+
+    def open_contact_view_page(self, index):
+        wd = self.app.wd
+        self.open_contacts_page()   
+        wd.find_elements_by_xpath("//img[@title='Details']")[index].click()
 
     def create(self, contact):
         wd = self.app.wd
@@ -43,9 +54,7 @@ class ContactHelper:
     def modify_contact(self, index, data:Contact):
         wd = self.app.wd
         self.open_contacts_page()
-        self.select_contact(index)
-        # open modification form
-        wd.find_elements_by_xpath("//img[@title='Edit']")[index].click()
+        self.open_contact_edit_page(index)
         # fill contacts form
         self.fill_contact_form(data)
         # submit modification
@@ -73,7 +82,11 @@ class ContactHelper:
             wd = self.app.wd
             wd.find_element_by_name(field_name).click()
             wd.find_element_by_name(field_name).clear()
-            wd.find_element_by_name(field_name).send_keys(text)
+            wd.find_element_by_name(field_name).send_keys(text)     
+
+    def get_form_field(self, field_name):
+        wd = self.app.wd
+        return wd.find_element_by_name(field_name).get_attribute("value") or None
 
     def count(self):
         wd = self.app.wd
@@ -90,12 +103,68 @@ class ContactHelper:
             for element in wd.find_elements_by_name('entry'):
                 cols = element.find_elements_by_tag_name('td')
                 contact = Contact(
-                    last_name=cols[1].text,
-                    first_name=cols[2].text,
-                    address=cols[3].text,
-                    all_emails=cols[4].text,
-                    all_phones=cols[5].text,
                     id=cols[0].find_element_by_tag_name("input").get_attribute("value"),
+                    last_name=cols[1].text or None,
+                    first_name=cols[2].text or None,
+                    address=cols[3].text or None,
+                    all_phones = cols[5].text or None,
+                    all_emails = cols[4].text or None,
                     )
                 self.contact_cache.append(contact)
         return self.contact_cache
+
+    def get_contact_from_edit_page(self, index):
+        self.open_contact_edit_page(index)
+        contact = Contact(
+            id=self.get_form_field("id"),
+            first_name=self.get_form_field("firstname"),
+            middle_name=self.get_form_field("middlename"),
+            last_name=self.get_form_field("lastname"),
+            nick_name=self.get_form_field("nickname"),
+            company=self.get_form_field("company"),
+            title=self.get_form_field("title"),
+            address=self.get_form_field("address"),
+            home=self.get_form_field("home"),
+            phone2=self.get_form_field("phone2"),
+            mobile=self.get_form_field("mobile"),
+            work=self.get_form_field("work"),
+            fax=self.get_form_field("fax"),
+            email=self.get_form_field("email"),
+            email2=self.get_form_field("email2"),
+            email3=self.get_form_field("email3"),
+            www=self.get_form_field("homepage")
+        )
+        return contact
+
+    def get_contact_from_view_page(self, index):
+        wd = self.app.wd
+        self.open_contact_view_page(index)
+        content = wd.find_element_by_id('content')
+
+        # Parse all phones
+        if len(content.text.split("\n\n")) > 0:
+            all_phones = content.text.split("\n\n")[1]
+            all_phones = re.sub(r"H: ", "", all_phones)
+            all_phones = re.sub(r"M: ", "", all_phones)
+            all_phones = re.sub(r"W: ", "", all_phones)
+            all_phones = re.sub(r"F:.*", "", all_phones)
+            all_phones = re.sub(r"\n$", "", all_phones)
+        else:
+            all_phones = ""
+        secondary_block = content.text.split("\n\n\n")[1]
+        phone2 = re.search(r"P: (.+)", secondary_block)
+        if phone2 is not None:
+            all_phones = "\n".join([all_phones, phone2.group(1)])
+
+        # Parse all emails
+        all_emails = content.find_elements_by_tag_name("a")
+        all_emails = filter(lambda x: x.get_attribute("href").startswith("mailto"), all_emails)
+        all_emails = [x.text for x in all_emails]
+        all_emails = "\n".join(all_emails)
+
+        contact = Contact(
+            id=self.get_form_field("id"),
+            all_phones=all_phones or None,
+            all_emails=all_emails or None,
+            )
+        return contact
