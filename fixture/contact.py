@@ -73,9 +73,11 @@ class ContactHelper:
         self.fill_form_field("mobile", contact.mobile)
         self.fill_form_field("work", contact.work)
         self.fill_form_field("fax", contact.fax)
+        self.fill_form_field("phone2", contact.phone2)
         self.fill_form_field("email", contact.email)
         self.fill_form_field("email2", contact.email2)
         self.fill_form_field("email3", contact.email3)
+        self.fill_form_field("homepage", contact.www)
 
     def fill_form_field(self, field_name, text):
         if text is not None:
@@ -142,7 +144,7 @@ class ContactHelper:
         content = wd.find_element_by_id('content')
 
         # Parse all phones
-        if len(content.text.split("\n\n")) > 0:
+        if len(content.text.split("\n\n")) > 1:
             all_phones = content.text.split("\n\n")[1]
             all_phones = re.sub(r"H: ", "", all_phones)
             all_phones = re.sub(r"M: ", "", all_phones)
@@ -151,10 +153,11 @@ class ContactHelper:
             all_phones = re.sub(r"\n$", "", all_phones)
         else:
             all_phones = ""
-        secondary_block = content.text.split("\n\n\n")[1]
-        phone2 = re.search(r"P: (.+)", secondary_block)
-        if phone2 is not None:
-            all_phones = "\n".join([all_phones, phone2.group(1)])
+        if len(content.text.split("\n\n\n")) > 1:
+            secondary_block = content.text.split("\n\n\n")[1]
+            phone2 = re.search(r"P: (.+)", secondary_block)
+            if phone2 is not None:
+                all_phones = "\n".join([all_phones, phone2.group(1)])
 
         # Parse all emails
         all_emails = content.find_elements_by_tag_name("a")

@@ -23,8 +23,8 @@ def test_details_on_view_page(app):
     contact_from_edit_page = app.contact.get_contact_from_edit_page(index)
     contact_from_edit_page.all_phones = join_phones(contact_from_edit_page)
     contact_from_edit_page.all_emails = join_emails(contact_from_edit_page)
-    assert contact_from_view_page.all_phones == contact_from_edit_page.all_phones
-    assert contact_from_view_page.all_emails == contact_from_edit_page.all_emails
+    assert clean(contact_from_view_page.all_phones) == contact_from_edit_page.all_phones
+    assert clean(contact_from_view_page.all_emails) == contact_from_edit_page.all_emails
 
 
 def clean(s):

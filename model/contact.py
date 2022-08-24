@@ -4,7 +4,7 @@ class Contact:
                 nick_name=None, title=None, company=None, address=None, 
                 home=None, phone2=None, mobile=None, work=None, fax=None, 
                 email=None, email2=None, email3=None,  www=None,
-                all_names=None, all_phones=None, all_emails=None):
+                all_phones=None, all_emails=None):
         self.id = id
         self.first_name = first_name
         self.middle_name = middle_name
@@ -22,7 +22,6 @@ class Contact:
         self.email2 = email2
         self.email3 = email3
         self.www = www
-        self.all_names = all_names
         self.all_phones = all_phones
         self.all_emails = all_emails
 
