@@ -10,7 +10,7 @@ except getopt.GetoptError:
     getopt.usage()
     sys.exit(2)
 
-n, f = process_opts(n=5, f="data/groups.json", opts=opts)
+n, f = process_opts(n=5, f="data/group.json", opts=opts)
 
 testdata = [Group(name="", header="", footer="")] + [
     Group(
