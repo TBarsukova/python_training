@@ -23,6 +23,7 @@ class ContactHelper:
         self.fill_contact_form(contact)
         # submit_contact_creation
         wd.find_element_by_name("submit").click()
+        self.contact_cache = None
 
     def select_contact(self, index):
         wd = self.app.wd
@@ -37,6 +38,7 @@ class ContactHelper:
         # confirm deletion
         wd.switch_to.alert.accept()
         self.refresh_contacts_page()
+        self.contact_cache = None
 
     def modify_contact(self, index, data:Contact):
         wd = self.app.wd
@@ -48,6 +50,7 @@ class ContactHelper:
         self.fill_contact_form(data)
         # submit modification
         wd.find_element_by_name("update").click()
+        self.contact_cache = None
 
     def fill_contact_form(self, contact:Contact):
         self.fill_form_field("firstname", contact.first_name)
@@ -77,19 +80,22 @@ class ContactHelper:
         self.open_contacts_page()
         return len(wd.find_elements_by_name('entry'))
 
+    contact_cache = None
+
     def get_contact_list(self):
-        wd = self.app.wd
-        self.open_contacts_page()
-        contacts = []
-        for element in wd.find_elements_by_name('entry'):
-            cols = element.find_elements_by_tag_name('td')
-            contact = Contact(
-                last_name=cols[1].text,
-                first_name=cols[2].text,
-                address=cols[3].text,
-                all_emails=cols[4].text,
-                all_phones=cols[5].text,
-                id=cols[0].find_element_by_tag_name("input").get_attribute("value"),
-                )
-            contacts.append(contact)
-        return contacts
+        if self.contact_cache is None:
+            wd = self.app.wd
+            self.open_contacts_page()
+            self.contact_cache = []
+            for element in wd.find_elements_by_name('entry'):
+                cols = element.find_elements_by_tag_name('td')
+                contact = Contact(
+                    last_name=cols[1].text,
+                    first_name=cols[2].text,
+                    address=cols[3].text,
+                    all_emails=cols[4].text,
+                    all_phones=cols[5].text,
+                    id=cols[0].find_element_by_tag_name("input").get_attribute("value"),
+                    )
+                self.contact_cache.append(contact)
+        return self.contact_cache
