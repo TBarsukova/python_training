@@ -1,16 +1,10 @@
-import pymysql
-import pymysql.cursors
+from fixture.orm import ORMFixture
 
-connection = pymysql.connect(
+db = ORMFixture(
     host="127.0.0.1", 
-    database="addressbook", 
+    name="addressbook", 
     user="root", 
-    password="",
-    )
+    password="")
 
-with connection:
-    with connection.cursor() as cursor:
-        sql = "SELECT * FROM addressbook"
-        cursor.execute(sql)
-        result = cursor.fetchall()
-        print(result)
+for item in db.get_contact_list():
+    print(item)
