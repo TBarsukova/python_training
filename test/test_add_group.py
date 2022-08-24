@@ -1,26 +1,7 @@
-import random
-import string
-
 import pytest
 
-from model.group import Group
+from data.group_data import testdata
 
-
-def randstr(prefix, maxlen, letters=True, digits=True, punctuation=True, spaces=True):
-    symbols = ""
-    if letters:     symbols += string.ascii_letters
-    if digits:      symbols += string.digits
-    if punctuation: symbols += string.punctuation
-    if spaces:      symbols += " "*10
-    return prefix + "".join (random.choice(symbols) for _ in range(random.randrange(maxlen))).strip()
-
-testdata = [Group(name="", header="", footer="")] + [
-    Group(
-        name=randstr("name_", 10, punctuation=False), 
-        header=randstr("header_", 20, punctuation=False), 
-        footer=randstr("footer_", 20, punctuation=False)
-        ) for _ in range(5)
-    ]
 
 @pytest.mark.parametrize("group", testdata, ids=[repr(x) for x in testdata])
 def test_add_group(app, group):
