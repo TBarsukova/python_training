@@ -30,14 +30,17 @@ class GroupHelper:
         self.open_groups_page()
         self.group_cache = None
 
-    def select_group(self, index):
+    def select_group(self, index=0, id=None):
         wd = self.app.wd
-        wd.find_elements_by_name("selected[]")[index].click()
+        if id is not None:
+            wd.find_element_by_xpath(f"//input[@value={id}]").click()
+        else:
+            wd.find_elements_by_name("selected[]")[index].click()
 
-    def delete_group(self, index):
+    def delete_group(self, index=0, id=None):
         wd = self.app.wd
         self.open_groups_page()
-        self.select_group(index)
+        self.select_group(index, id)
         # submit deletion
         wd.find_element_by_name("delete").click()
         self.open_groups_page()

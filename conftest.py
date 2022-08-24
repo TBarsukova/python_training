@@ -6,6 +6,7 @@ import pytest
 import jsonpickle
 
 from fixture.application import Application
+from fixture.db import DbFixture
 
 fixture = None
 target = None
@@ -24,10 +25,24 @@ def app(request):
     global target
     if fixture is None or not fixture.is_valid():
         browser = request.config.getoption("--browser")
-        config = load_config(request.config.getoption("--target"))
+        config = load_config(request.config.getoption("--target"))['web']
         fixture = Application(browser=browser, url=config['baseUrl'])
-    fixture.session.ensure_login(username=target['username'], password=target['password'])
+    fixture.session.ensure_login(username=config['username'], password=config['password'])
     return fixture
+    
+@pytest.fixture(scope = "session")
+def db(request):
+    config = load_config(request.config.getoption("--target"))['db']
+    dbfixture = DbFixture(
+        host=config['host'],
+        name=config['name'],
+        user=config['user'],
+        password=config['password']
+        )
+    def fin():
+        dbfixture.destroy()
+    request.addfinalizer(fin)
+    return dbfixture
 
 
 @pytest.fixture(scope = "session", autouse=True)

@@ -36,14 +36,17 @@ class ContactHelper:
         wd.find_element_by_name("submit").click()
         self.contact_cache = None
 
-    def select_contact(self, index):
+    def select_contact(self, index=0, id=None):
         wd = self.app.wd
-        wd.find_elements_by_name("selected[]")[index].click()
+        if id is not None:
+            wd.find_element_by_xpath(f"//input[@value={id}]").click()
+        else:
+            wd.find_elements_by_name("selected[]")[index].click()
 
-    def delete_contact(self, index):
+    def delete_contact(self, index=0, id=None):
         wd = self.app.wd
         self.open_contacts_page()
-        self.select_contact(index)
+        self.select_contact(index, id)
         # submit deletion
         wd.find_element_by_xpath("//input[@value='Delete']").click()
         # confirm deletion

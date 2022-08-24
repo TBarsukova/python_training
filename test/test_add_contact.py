@@ -1,8 +1,7 @@
-def test_add_contact(app, json_contact):
+def test_add_contact(app, db, json_contact):
     contact = json_contact
-    old_contacts = app.contact.get_contact_list()
+    old_contacts = db.get_contact_list()
     app.contact.create(contact)
-    assert len(old_contacts) + 1 == app.contact.count()
-    new_contacts = app.contact.get_contact_list()
+    new_contacts = db.get_contact_list()
     old_contacts.append(contact)
     assert sorted(old_contacts) == sorted(new_contacts)
