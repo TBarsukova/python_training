@@ -10,6 +10,10 @@ class ContactHelper:
         if not wd.find_elements_by_name("searchstring"):
             wd.find_element_by_link_text("home").click()
 
+    def refresh_contacts_page(self):
+        wd = self.app.wd
+        wd.find_element_by_link_text("home").click()    
+
     def create(self, contact):
         wd = self.app.wd
         self.open_contacts_page()
@@ -27,12 +31,12 @@ class ContactHelper:
     def delete_contact(self, index):
         wd = self.app.wd
         self.open_contacts_page()
-        # select first contact
-        self.select_contact(0)
+        self.select_contact(index)
         # submit deletion
         wd.find_element_by_xpath("//input[@value='Delete']").click()
         # confirm deletion
         wd.switch_to.alert.accept()
+        self.refresh_contacts_page()
 
     def modify_contact(self, index, data:Contact):
         wd = self.app.wd
@@ -71,4 +75,21 @@ class ContactHelper:
     def count(self):
         wd = self.app.wd
         self.open_contacts_page()
-        return len(wd.find_elements_by_name("selected[]"))
+        return len(wd.find_elements_by_name('entry'))
+
+    def get_contact_list(self):
+        wd = self.app.wd
+        self.open_contacts_page()
+        contacts = []
+        for element in wd.find_elements_by_name('entry'):
+            cols = element.find_elements_by_tag_name('td')
+            contact = Contact(
+                last_name=cols[1].text,
+                first_name=cols[2].text,
+                address=cols[3].text,
+                all_emails=cols[4].text,
+                all_phones=cols[5].text,
+                id=cols[0].find_element_by_tag_name("input").get_attribute("value"),
+                )
+            contacts.append(contact)
+        return contacts
