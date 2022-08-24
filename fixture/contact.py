@@ -54,7 +54,8 @@ class ContactHelper:
         self.fill_form_field("email3", contact.email3)
 
     def fill_form_field(self, field_name, text):
-        wd = self.app.wd
-        wd.find_element_by_name(field_name).click()
-        wd.find_element_by_name(field_name).clear()
-        wd.find_element_by_name(field_name).send_keys(text)
+        if text is not None:
+            wd = self.app.wd
+            wd.find_element_by_name(field_name).click()
+            wd.find_element_by_name(field_name).clear()
+            wd.find_element_by_name(field_name).send_keys(text)
