@@ -1,7 +1,7 @@
 from model.group import Group
 from random import randrange
     
-def test_modify_random_group_name(app, db):
+def test_modify_random_group_name(app, db, check_ui):
     if not app.group.count():
         app.group.create(Group(name="to_be_deleted"))
     old_groups = db.get_group_list()
@@ -12,3 +12,5 @@ def test_modify_random_group_name(app, db):
     new_groups = db.get_group_list()
     old_groups[index] = group
     assert sorted(old_groups) == sorted(new_groups)
+    if check_ui:
+        assert sorted(new_groups) == sorted(app.group.get_group_list())

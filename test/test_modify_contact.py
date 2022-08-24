@@ -1,7 +1,7 @@
 from model.contact import Contact
 from random import randrange
     
-def test_modify_random_contact(app, db):
+def test_modify_random_contact(app, db, check_ui):
     if not app.contact.count():
         app.contact.create(Contact(first_name="to_be_deleted"))
     old_contacts = db.get_contact_list()
@@ -12,3 +12,5 @@ def test_modify_random_contact(app, db):
     new_contacts = db.get_contact_list()
     old_contacts[index] = contact
     assert sorted(old_contacts) == sorted(new_contacts)
+    if check_ui:
+        assert sorted(new_contacts) == sorted(app.contact.get_contact_list())
