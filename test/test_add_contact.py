@@ -12,7 +12,7 @@ def randstr(prefix, maxlen, letters=True, digits=True, punctuation=True, spaces=
     if digits:      symbols += string.digits
     if punctuation: symbols += string.punctuation
     if spaces:      symbols += " "*10
-    return prefix + "".join (random.choice(symbols) for _ in range(random.randrange(maxlen)))
+    return prefix + "".join (random.choice(symbols) for _ in range(random.randrange(maxlen))).strip()
 
 testdata = [Contact(first_name="", middle_name="", last_name="")] + [
         Contact(
