@@ -2,9 +2,10 @@ from model.group import Group
 from random import randrange
     
 def test_modify_random_group_name(app, db, check_ui):
-    if not app.group.count():
-        app.group.create(Group(name="to_be_deleted"))
     old_groups = db.get_group_list()
+    if not old_groups:
+        app.group.create(Group(name="to_be_deleted"))
+        old_groups = db.get_group_list()
     group = Group(name="new_group_name")
     index = randrange(len(old_groups))  
     group.id = old_groups[index].id

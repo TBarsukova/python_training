@@ -1,5 +1,9 @@
-from model.contact import Contact
 import re
+
+from selenium.webdriver.support.ui import Select
+
+from model.contact import Contact
+
 
 class ContactHelper:
 
@@ -100,10 +104,13 @@ class ContactHelper:
 
     contact_cache = None
 
-    def get_contact_list(self):
+    def get_contact_list(self, group=None):
+        self.open_contacts_page()
+        if group is not None:
+            self.select_contact_group(group)
+            self.contact_cache = None
         if self.contact_cache is None:
             wd = self.app.wd
-            self.open_contacts_page()
             self.contact_cache = []
             for element in wd.find_elements_by_name('entry'):
                 cols = element.find_elements_by_tag_name('td')
@@ -174,3 +181,29 @@ class ContactHelper:
             all_emails=all_emails or None,
             )
         return contact
+
+    def add_to_group(self, contacts:list, group):
+        wd = self.app.wd
+        self.open_contacts_page()
+        for contact in contacts:
+            self.select_contact(id=contact.id)
+        dropdown = wd.find_element_by_name("to_group")
+        dropdown.click()
+        Select(dropdown).select_by_value(group.id)
+        wd.find_element_by_name("add").click()
+        self.refresh_contacts_page()
+
+    def remove_from_group(self, contacts:list, group):
+        wd = self.app.wd
+        self.open_contacts_page()
+        self.select_contact_group(group)
+        for contact in contacts:
+            self.select_contact(id=contact.id)
+        wd.find_element_by_name("remove").click()
+        self.refresh_contacts_page()
+
+    def select_contact_group(self, group):
+        wd = self.app.wd
+        dropdown = wd.find_element_by_name("group")
+        dropdown.click()
+        Select(dropdown).select_by_value(group.id)
