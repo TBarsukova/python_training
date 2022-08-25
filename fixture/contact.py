@@ -15,13 +15,10 @@ class ContactHelper:
         if not wd.find_elements_by_name("searchstring"):
             wd.find_element_by_link_text("home").click()
 
-    def refresh_contacts_page(self):
-        wd = self.app.wd
-        wd.find_element_by_link_text("home").click()    
-
     def open_contact_edit_page(self, index):
         wd = self.app.wd
-        self.open_contacts_page()   
+        self.app.open_home_page()  
+        print (len(wd.find_elements_by_xpath("//img[@title='Edit']")), index)
         wd.find_elements_by_xpath("//img[@title='Edit']")[index].click()
 
     def open_contact_view_page(self, index):
