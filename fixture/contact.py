@@ -52,7 +52,7 @@ class ContactHelper:
         wd.find_element_by_xpath("//input[@value='Delete']").click()
         # confirm deletion
         wd.switch_to.alert.accept()
-        self.refresh_contacts_page()
+        self.app.open_home_page()
         self.contact_cache = None
 
     def modify_contact(self, index, data:Contact):
@@ -188,7 +188,7 @@ class ContactHelper:
         dropdown.click()
         Select(dropdown).select_by_value(group.id)
         wd.find_element_by_name("add").click()
-        self.refresh_contacts_page()
+        self.app.open_home_page()
 
     def remove_from_group(self, contacts:list, group):
         wd = self.app.wd
@@ -197,7 +197,7 @@ class ContactHelper:
         for contact in contacts:
             self.select_contact(id=contact.id)
         wd.find_element_by_name("remove").click()
-        self.refresh_contacts_page()
+        self.app.open_home_page()
 
     def select_contact_group(self, group):
         wd = self.app.wd
