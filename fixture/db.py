@@ -37,7 +37,7 @@ class DbFixture:
     def get_contact_list(self):
         result= []
         with self.connection.cursor() as cursor:
-            sql = "SELECT id, firstname, middlename, lastname,  address, home, mobile, work, phone2, email, email2, email3 FROM addressbook WHERE deprecated='0000-00-00 00:00:00'"
+            sql = "SELECT id, firstname, middlename, lastname, nickname, company, title, address, home, mobile, work, fax, phone2, email, email2, email3, homepage FROM addressbook WHERE deprecated='0000-00-00 00:00:00'"
             cursor.execute(sql)
             for row in cursor:
                 result.append(
@@ -46,14 +46,19 @@ class DbFixture:
                         first_name=row[1] or None, 
                         middle_name=row[2] or None, 
                         last_name=row[3] or None,
-                        address=row[4] or None, 
-                        home=row[5] or None,
-                        mobile=row[6] or None, 
-                        work=row[7] or None,
-                        phone2=row[8] or None,
-                        email=row[9] or None,
-                        email2=row[10] or None, 
-                        email3=row[11] or None,
+                        nick_name=row[4] or None,
+                        company=row[5] or None,
+                        title=row[6] or None,
+                        address=row[7] or None, 
+                        home=row[8] or None,
+                        mobile=row[9] or None, 
+                        work=row[10] or None, 
+                        fax=row[11] or None,
+                        phone2=row[12] or None,
+                        email=row[13] or None,
+                        email2=row[14] or None, 
+                        email3=row[15] or None,
+                        www=row[16] or None,
                     )
                 )
         return result

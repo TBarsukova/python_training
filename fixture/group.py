@@ -50,14 +50,17 @@ class GroupHelper:
         self.open_groups_page()
         self.group_cache = None
 
-    def modify_group(self, index, data:Group):
+    def modify_group(self, group:Group, index=None, id=None):
         wd = self.app.wd
         self.open_groups_page()
-        self.select_group(index)
+        if group.id:
+            self.select_group(id=group.id)
+        else:
+            self.select_group(index, id)
         # open modification form
         wd.find_element_by_name("edit").click()
         # fill form
-        self.fill_group_form(data)
+        self.fill_group_form(group)
         # submit modification
         wd.find_element_by_name("update").click()
         self.group_cache = None

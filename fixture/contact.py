@@ -15,11 +15,13 @@ class ContactHelper:
         if not wd.find_elements_by_name("searchstring"):
             wd.find_element_by_link_text("home").click()
 
-    def open_contact_edit_page(self, index):
+    def open_contact_edit_page(self, index=None, id=None):
         wd = self.app.wd
         self.app.open_home_page()  
-        print (len(wd.find_elements_by_xpath("//img[@title='Edit']")), index)
-        wd.find_elements_by_xpath("//img[@title='Edit']")[index].click()
+        if id:
+            wd.find_element_by_css_selector("a[href='edit.php?id=%s']" % id).click()
+        else:
+            wd.find_elements_by_xpath("//img[@title='Edit']")[index].click()
 
     def open_contact_view_page(self, index):
         wd = self.app.wd
@@ -55,12 +57,15 @@ class ContactHelper:
         self.app.open_home_page()
         self.contact_cache = None
 
-    def modify_contact(self, index, data:Contact):
+    def modify_contact(self, contact:Contact, index=None, id=None):
         wd = self.app.wd
         self.open_contacts_page()
-        self.open_contact_edit_page(index)
+        if contact.id:
+            self.open_contact_edit_page(id=contact.id)
+        else:
+            self.open_contact_edit_page(index, id)
         # fill contacts form
-        self.fill_contact_form(data)
+        self.fill_contact_form(contact)
         # submit modification
         wd.find_element_by_name("update").click()
         self.contact_cache = None
